@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEM Research Lab</title>
+<style>
+:root{--bg:#f2f5f9;--paper:#fff;--ink:#1c2f47;--muted:#607187;--line:#dce4ed;--nav:#122b42;--blue:#245bd8;--teal:#087f83;--soft:#eef4ff;--mint:#eaf7f4;--gold:#a97113;--warm:#fff6e4;--shadow:0 8px 30px #142a4210}
+[data-theme=dark]{--bg:#101c2c;--paper:#18283b;--ink:#e1eaf5;--muted:#adbed2;--line:#304359;--nav:#0c1826;--blue:#8bb3ff;--teal:#76d9ca;--soft:#203954;--mint:#1c3c3b;--gold:#f2c679;--warm:#3d3426;--shadow:none;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.85 system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input{font:inherit}
+button{cursor:pointer}
+a{color:var(--blue);text-underline-offset:4px}
+button,a,input,summary{touch-action:manipulation}
+button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible,[tabindex="-1"]:focus-visible{outline:3px solid #dba83e;outline-offset:4px}
+button:disabled{opacity:.4;cursor:default}
+.shell{display:grid;grid-template-columns:254px minmax(0,1fr);min-height:100vh}
+.sidebar{background:var(--nav);color:#e6eef8;padding:30px 18px;position:sticky;top:0;height:100vh;overflow:auto}
+.logo{padding:0 13px 24px;font-size:21px;font-weight:800;letter-spacing:1px}
+.logo em{color:#71d8ca;font-style:normal}
+.logo small{display:block;color:#a4b9ce;font-size:11px;font-weight:400;letter-spacing:0;margin-top:6px}
+.nav-label{font-size:10px;color:#91abc3;letter-spacing:2px;padding:0 13px;margin:8px 0 13px}
+nav{display:grid;gap:5px}
+nav button{background:none;border:1px solid transparent;color:#bacbdb;text-align:left;padding:11px 12px;border-radius:10px;font-size:13px;line-height:1.6;display:flex;gap:11px;align-items:center}
+nav button .num{font:11px ui-monospace,monospace;opacity:.7}
+nav button[aria-selected=true]{background:#234a65;color:#fff;border-color:#386582}
+nav button.visited .num{color:#8ae2d2;opacity:1}
+.sidebar-bottom{border-top:1px solid #365064;margin:24px 12px 0;padding-top:18px;color:#a4b9ce;font-size:11px}
+.progress{height:4px;background:#2b4358;margin:12px 0;border-radius:8px;overflow:hidden}
+.progress i{display:block;height:100%;background:#6bd5c5;transition:width .3s;width:10%}
+.workspace{min-width:0}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;background:var(--paper);border-bottom:1px solid var(--line);padding:15px 34px}
+.breadcrumb{font-size:12px;color:var(--muted)}
+.toolbar{display:flex;gap:8px}
+button.icon{padding:7px 12px;border:1px solid var(--line);border-radius:8px;color:var(--ink);background:var(--paper);font-size:12px}
+main{max-width:1180px;margin:auto;padding:32px 36px 20px}
+.panel{animation:appear .27s ease}
+.panel[hidden]{display:none}
+@keyframes appear{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.kicker{color:var(--teal);letter-spacing:1.2px;font-size:11px;font-weight:800;margin:0 0 9px}
+h1{font-size:clamp(26px,3.1vw,39px);line-height:1.45;margin:0 0 12px;letter-spacing:-.5px}
+h2{font-size:21px;line-height:1.6;margin:0 0 13px}
+h3{font-size:16px;line-height:1.7;margin:0 0 10px}
+p{margin:0 0 13px}
+.lead{color:var(--muted);font-size:16px;max-width:900px;margin-bottom:26px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:24px;margin:18px 0;box-shadow:var(--shadow)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid .card{margin:0}
+.note{background:var(--soft);border-left:3px solid var(--blue);padding:16px 19px;border-radius:0 10px 10px 0;margin:18px 0}
+.note.mint{background:var(--mint);border-color:var(--teal)}
+.note.warm{background:var(--warm);border-color:var(--gold)}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.badge{display:inline-block;background:var(--soft);color:var(--blue);padding:3px 10px;border-radius:20px;font-size:11px;margin:0 5px 8px 0}
+.badge.green{color:var(--teal);background:var(--mint)}
+.badge.gold{color:var(--gold);background:var(--warm)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:22px 0}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:19px}
+.stat .value{font-size:34px;font-weight:800;color:var(--blue);font-variant-numeric:tabular-nums;line-height:1.4}
+.stat .label{font-size:12px;color:var(--muted)}
+.stat.teal .value{color:var(--teal)}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;vertical-align:top;padding:13px 12px;border-bottom:1px solid var(--line)}
+th{background:var(--bg);font-size:11px;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+.formula{background:var(--bg);border:1px solid var(--line);padding:15px 18px;border-radius:10px;font:17px/1.9 ui-monospace,SFMono-Regular,Consolas,monospace;overflow:auto;margin:13px 0;white-space:pre-wrap}
+.formula strong{color:var(--teal)}
+ul,ol{padding-left:23px;margin:10px 0}
+li{margin:7px 0}
+details{background:var(--paper);border:1px solid var(--line);padding:16px 19px;border-radius:12px;margin:12px 0}
+summary{font-weight:650;cursor:pointer;line-height:1.7}
+details[open] summary{margin-bottom:14px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.pill,.btn{background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:9px 14px;font-size:13px}
+.pill[aria-pressed=true]{color:var(--teal);border-color:var(--teal);background:var(--mint);font-weight:700}
+.btn.primary{background:#245bd8;border-color:#245bd8;color:white}
+.btn:hover,.pill:hover,.icon:hover{filter:brightness(.96)}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin:17px 0}
+.quote{font-size:17px;line-height:2;border-left:3px solid var(--teal);padding:3px 0 3px 20px}
+.step{display:grid;grid-template-columns:32px 1fr;gap:13px;margin:21px 0}
+.step .n{width:30px;height:30px;background:var(--soft);color:var(--blue);border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:12px}
+pre{margin:14px 0;background:#10243a;color:#d6e6fa;padding:22px;border-radius:11px;font:12px/1.85 ui-monospace,Consolas,monospace;overflow:auto;white-space:pre}
+code{font-family:ui-monospace,Consolas,monospace}
+.status{font-size:12px;color:var(--teal);min-height:23px}
+.diagram{width:100%;display:block}
+.diagram text{fill:var(--ink);font-family:system-ui,sans-serif}
+.diagram .node{fill:var(--soft);stroke:var(--line);stroke-width:1.5}
+.diagram .edge{fill:none;stroke:var(--teal);stroke-width:3}
+.diagram .direct-edge{stroke:var(--blue)}
+.diagram .dim{opacity:.14}
+.diagram .letter{font-size:25px;font-weight:800}
+.diagram .node-name{font-size:14px;font-weight:650}
+.diagram .edge-text{font-size:15px;font-weight:750;fill:var(--teal)}
+.diagram .direct-text{fill:var(--blue)}
+.diagram .particle{fill:var(--teal)}
+.diagram .blue-particle{fill:var(--blue)}
+.diagram .path-label{font-size:11px;fill:var(--muted)}
+.animation-off .particle,.animation-off .blue-particle{display:none}
+.control{padding:15px 0;border-bottom:1px solid var(--line)}
+.control label{display:flex;justify-content:space-between;gap:15px;font-size:13px}
+.control output{font-weight:800;color:var(--teal);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin-top:16px}
+.range-ends{display:flex;justify-content:space-between;font-size:10px;color:var(--muted)}
+.chart-row{display:grid;grid-template-columns:110px 1fr 55px;gap:10px;align-items:center;margin:19px 0;font-size:12px}
+.rail{position:relative;height:19px;background:var(--bg);border-radius:5px}
+.rail:after{content:"";position:absolute;left:50%;top:-4px;height:27px;width:1px;background:var(--muted);opacity:.55}
+.rail i{position:absolute;height:19px;top:0;background:var(--blue);border-radius:3px;transition:width .15s,left .15s}
+.rail i.indirect{background:var(--teal)}
+.rail i.total{background:#9474c9}
+.chart-scale{display:flex;justify-content:space-between;margin-left:120px;margin-right:65px;font:10px ui-monospace,monospace;color:var(--muted)}
+.ring-wrap{display:flex;gap:25px;align-items:center;flex-wrap:wrap}
+.ring{width:180px;height:180px;flex-shrink:0}
+.legend-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px}
+.quiz fieldset{border:1px solid var(--line);border-radius:12px;padding:18px;margin:17px 0}
+.quiz legend{padding:0 7px;font-weight:700;font-size:14px}
+.quiz label{display:block;padding:9px 11px;border-radius:7px;cursor:pointer;font-size:13px}
+.quiz label:hover{background:var(--bg)}
+.quiz input{margin-right:9px;accent-color:var(--teal)}
+.feedback{margin:12px 0 0;color:var(--teal);font-size:13px}
+.feedback.error{color:var(--gold)}
+.pager{display:flex;justify-content:space-between;gap:12px;margin:30px 0 14px}
+footer{font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding-top:15px}
+.focus-mode .sidebar{display:none}
+.focus-mode .shell{grid-template-columns:1fr}
+.focus-mode main{max-width:1120px;font-size:17px}
+.source-list li{margin:12px 0}
+@media(max-width:1000px){.shell{grid-template-columns:220px minmax(0,1fr)}main{padding:26px 24px}.sidebar{padding:25px 12px}.grid.three{grid-template-columns:1fr}.topbar{padding:14px 24px}}
+@media(max-width:760px){
+.shell{display:block}.sidebar{height:auto;position:static;padding:17px 16px 12px}.logo{padding:0 4px 12px;font-size:19px}.logo small,.nav-label,.sidebar-bottom{display:none}
+nav{display:flex;overflow:auto;gap:7px;padding-bottom:4px}nav button{white-space:nowrap;flex-shrink:0;background:#1b374f;padding:9px 11px;font-size:12px}
+main{padding:24px 17px}.topbar{padding:11px 17px}.breadcrumb{font-size:10px}.grid{grid-template-columns:1fr}
+.card{padding:19px}.lead{font-size:15px}.toolbar{gap:5px}button.icon{font-size:11px;padding:6px 8px}
+}
+@media(max-width:450px){.stats{gap:7px}.stat{padding:12px}.stat .value{font-size:28px}.stat .label{font-size:10px}.chart-row{grid-template-columns:85px 1fr 45px}.chart-scale{margin-left:95px;margin-right:55px}.breadcrumb{max-width:120px}h1{font-size:26px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}.particle,.blue-particle{display:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar" aria-label="Հետազոտության նավարկում">
+<div class="logo">SEM<span style="color:#71d8ca">.</span><em>LAB</em><small>Մեթոդաբանությունից դեպի արդյունք</small></div>
+<div class="nav-label">ՄԻՆԻ ՀԵՏԱԶՈՏՈՒԹՅՈՒՆ</div>
+<nav role="tablist" aria-label="Հետազոտության բաժիններ" aria-orientation="vertical">
+<button role="tab" id="t0" aria-controls="p0" aria-selected="true" data-page="0"><span class="num">01</span>Առաջադրանքի տվյալները</button>
+<button role="tab" id="t1" aria-controls="p1" aria-selected="false" tabindex="-1" data-page="1"><span class="num">02</span>Հետազոտության կառուցվածքը</button>
+<button role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1" data-page="2"><span class="num">03</span>Ինչո՞ւ հենց SEM</button>
+<button role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1" data-page="3"><span class="num">04</span>Չափման մոդելը</button>
+<button role="tab" id="t4" aria-controls="p4" aria-selected="false" tabindex="-1" data-page="4"><span class="num">05</span>Ուղիներ և հաշվարկներ</button>
+<button role="tab" id="t5" aria-controls="p5" aria-selected="false" tabindex="-1" data-page="5"><span class="num">06</span>Python և իրականացում</button>
+<button role="tab" id="t6" aria-controls="p6" aria-selected="false" tabindex="-1" data-page="6"><span class="num">07</span>Արդյունքների մեկնաբանում</button>
+<button role="tab" id="t7" aria-controls="p7" aria-selected="false" tabindex="-1" data-page="7"><span class="num">08</span>Ինտերակտիվ լաբորատորիա</button>
+<button role="tab" id="t8" aria-controls="p8" aria-selected="false" tabindex="-1" data-page="8"><span class="num">09</span>Որակ և սահմանափակումներ</button>
+<button role="tab" id="t9" aria-controls="p9" aria-selected="false" tabindex="-1" data-page="9"><span class="num">10</span>Պաշտպանություն և աղբյուրներ</button>
+</nav>
+<div class="sidebar-bottom">
+<div id="visitText">Բացված է 1 / 10 բաժին</div>
+<div class="progress"><i id="progress"></i></div>
+Մոդել՝ X → M → Y<br>Տրված գործակիցների վերլուծություն
+</div>
+</aside>
+
+<div class="workspace">
+<header class="topbar">
+<div class="breadcrumb" id="breadcrumb">Հետազոտություն / Ելակետային տվյալներ</div>
+<div class="toolbar">
+<button class="icon" id="motion" aria-pressed="true">Շարժում՝ միացված</button>
+<button class="icon" id="theme" aria-pressed="false">Մութ տեսք</button>
+<button class="icon" id="focus" aria-pressed="false">Ներկայացման ռեժիմ</button>
+</div>
+</header>
+
+<main>
+<section class="panel" id="p0" role="tabpanel" aria-labelledby="t0" tabindex="-1">
+<p class="kicker">01 / ԱՌԱՋԱԴՐԱՆՔԻ ՏՎՅԱԼՆԵՐԸ</p>
+<h1>Կառավարումից՝ նորարարություն,<br>նորարարությունից՝ արդյունավետություն</h1>
+<p class="lead">Կառուցվածքային հավասարումների մոդելավորման՝ SEM-ի ընտրության հիմնավորում և նորարարական կարողության միջնորդական դերի ուսումնասիրություն։</p>
+
+<div class="card">
+<span class="badge">Աղբյուր՝ տրամադրված առաջադրանք</span>
+<span class="badge green">Ստանդարտացված գործակիցներ</span>
+<h2>Ի՞նչ է պահանջվում</h2>
+<p>Ուսումնասիրել կառավարման որակի՝ <b>X</b>, և կազմակերպության արդյունավետության՝ <b>Y</b>, կապը՝ նորարարական կարողության՝ <b>M</b>, միջնորդությամբ։ Հաշվարկել անուղղակի և ընդհանուր ազդեցությունները, ներկայացնել չափման մոդելի ցուցանիշները և պատասխանել մեթոդաբանական հարցերին։</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Ուղին</th><th>Նշանակումը</th><th>Տրված գործակիցը</th><th>Բովանդակությունը</th></tr></thead>
+<tbody>
+<tr><td>X → M</td><td>a</td><td><b>0.60</b></td><td>Կառավարման որակ → նորարարական կարողություն</td></tr>
+<tr><td>M → Y</td><td>b</td><td><b>0.50</b></td><td>Նորարարական կարողություն → արդյունավետություն՝ X-ը հաշվի առնելիս</td></tr>
+<tr><td>X → Y</td><td>c′</td><td><b>0.25</b></td><td>Կառավարման որակի ուղղակի կապը արդյունավետության հետ՝ M-ը հաշվի առնելիս</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="stats">
+<div class="stat"><div class="value">3</div><div class="label">Լատենտ փոփոխական</div></div>
+<div class="stat teal"><div class="value">9</div><div class="label">Ցուցանիշի անվանում</div></div>
+<div class="stat"><div class="value">3</div><div class="label">Տրված ուղու գործակից</div></div>
+</div>
+
+<div class="card">
+<h2>Չափման մոդելի սկզբնական ցուցանիշները</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Լատենտ փոփոխական</th><th>Ցուցանիշ 1</th><th>Ցուցանիշ 2</th><th>Ցուցանիշ 3</th></tr></thead>
+<tbody>
+<tr><td><b>Կառավարման որակ՝ X</b></td><td>Թափանցիկություն</td><td>Հաշվետվողականություն</td><td>Վերահսկողություն</td></tr>
+<tr><td><b>Նորարարական կարողություն՝ M</b></td><td>Նոր պրոդուկտների թիվ</td><td>R&amp;D ներդրումներ</td><td>Գործընթացների թվայնացում</td></tr>
+<tr><td><b>Արդյունավետություն՝ Y</b></td><td>Շահութաբերություն</td><td>Շուկայի մասնաբաժին</td><td>Հաճախորդների պահպանում</td></tr>
+</tbody>
+</table>
+</div>
+<p class="small muted" style="margin-top:12px">R&amp;D՝ հետազոտություն և մշակում։ Ցուցանիշների անունները տրված են, սակայն դրանց թվային դիտարկումները՝ ոչ։</p>
+</div>
+
+<div class="grid">
+<div class="card"><h3>Հասանելի է</h3><p>Տեսական կառուցվածք, փոփոխականների իմաստ, ցուցանիշների ցանկ և երեք պատրաստի գործակից։ Դրանք բավարար են պահանջվող ազդեցությունները հաշվարկելու համար։</p></div>
+<div class="card"><h3>Չի տրամադրվել</h3><p>Կազմակերպությունների տվյալների աղյուսակ, ընտրանքի ծավալ, կովարիացիոն մատրից, գործոնային բեռնվածություններ կամ ստանդարտ սխալներ։</p></div>
+</div>
+<div class="note"><b>Աշխատանքի կարգավիճակը․</b> տրված SEM մոդելի մեթոդաբանական և հաշվարկային ուսումնասիրություն։ Իրական տվյալների վրա ամբողջական SEM գնահատում այս առաջադրանքի շրջանակում չի իրականացվում։</div>
+</section>
+
+<section class="panel" id="p1" role="tabpanel" aria-labelledby="t1" tabindex="-1" hidden>
+<p class="kicker">02 / ՀԵՏԱԶՈՏՈՒԹՅԱՆ ԿԱՌՈՒՑՎԱԾՔԸ</p>
+<h1>Հարցից՝ դեպի վերլուծական ծրագիր</h1>
+<p class="lead">Սահմանում ենք հետազոտության առարկան, նպատակը և քայլերը՝ պահպանելով դասընթացի մեթոդաբանական տրամաբանությունը։</p>
+<div class="card">
+<h2>Հիմնական հետազոտական հարց</h2>
+<p class="quote">Ինչպե՞ս է տրված մոդելում ներկայացվում կառավարման որակի կապը կազմակերպության արդյունավետության հետ, և ի՞նչ դեր ունի նորարարական կարողությունը՝ որպես միջնորդ փոփոխական։</p>
+<p>Մեզ հետաքրքրում է կապի կառուցվածքն ու թվային տրոհումը՝ որքանն է անցնում ուղղակի, որքանն է՝ նորարարական կարողության միջոցով։</p>
+</div>
+<div class="grid">
+<div class="card"><h3>Հետազոտության օբյեկտ</h3><p>Առաջադրանքում նկարագրված կազմակերպության կառավարման համակարգը՝ կառավարման, նորարարական կարողության և գործունեության արդյունքների փոխկապակցվածությամբ։</p></div>
+<div class="card"><h3>Հետազոտության առարկա</h3><p>Այդ համակարգում կառավարման որակի և արդյունավետության ուղղակի ու նորարարական կարողությամբ միջնորդավորված կապերը։</p></div>
+</div>
+<div class="card">
+<h2>Նպատակ</h2>
+<p>Հիմնավորել SEM մոտեցման համապատասխանությունը խնդրին և տրված գործակիցներով բացահայտել ուղղակի, անուղղակի ու ընդհանուր ազդեցությունների կառուցվածքը՝ սահմանելով մեկնաբանության հնարավորություններն ու սահմանները։</p>
+<h3>Նպատակին տանող վեց խնդիր</h3>
+<ol>
+<li><b>Սահմանել</b> հիմնական հասկացություններն ու դրանց ցուցանիշները։</li>
+<li><b>Հիմնավորել</b> SEM մոտեցումը՝ այլ մեթոդների համեմատությամբ։</li>
+<li><b>Ներկայացնել</b> չափման և կառուցվածքային մոդելների տարբերությունն ու կապը։</li>
+<li><b>Հաշվարկել</b> ուղղակի, անուղղակի և ընդհանուր ազդեցությունները։</li>
+<li><b>Ուսումնասիրել</b> արդյունքների փոփոխությունը պայմանական սցենարներում։</li>
+<li><b>Մեկնաբանել</b> արդյունքները՝ նշելով տվյալային ու մեթոդաբանական սահմանափակումները։</li>
+</ol>
+</div>
+<div class="card">
+<h2>Վարկածների տրամաբանությունը</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Վարկած</th><th>Ստուգելի բովանդակություն</th><th>Այս աշխատանքի սահմանը</th></tr></thead>
+<tbody>
+<tr><td>H₁</td><td>Կառավարման որակը դրական կապ ունի նորարարական կարողության հետ՝ a &gt; 0։</td><td>Տրված գործակիցը դրական է։</td></tr>
+<tr><td>H₂</td><td>Նորարարական կարողությունը դրական կապ ունի արդյունավետության հետ՝ b &gt; 0։</td><td>Տրված գործակիցը դրական է։</td></tr>
+<tr><td>H₃</td><td>Առկա է դրական ուղղակի բաղադրիչ՝ c′ &gt; 0։</td><td>Տրված գործակիցը դրական է։</td></tr>
+<tr><td>H₄</td><td>Նորարարական կարողությամբ անուղղակի բաղադրիչը դրական է՝ ab &gt; 0։</td><td>Հաշվարկում ենք տրված a և b-ով։</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note warm">Տրված թվերը համահունչ են այս ուղղորդված ենթադրություններին, բայց դրանց վիճակագրական ստուգում չենք կատարում։ «Հաստատվել է վարկածը» ձևակերպման համար անհրաժեշտ կլինեին գնահատականների անորոշության տվյալներ։</div>
+</div>
+<details>
+<summary>Հետազոտության շրջանակը և մոտեցումը</summary>
+<p>Սա ուսումնական, մոդելահեն և հաշվարկային վերլուծություն է։ Կոնկրետ երկիր, ոլորտ, կազմակերպությունների ընտրանք կամ ժամանակահատված առաջադրանքում սահմանված չէ․ դրանք չենք հորինում։</p>
+<p>Ընդհանուր մոտեցումը համակարգային է՝ ուշադրության կենտրոնում փոխկապակցված տարրերն են։ Վերլուծության ընթացքը հիմնականում դեդուկտիվ է՝ տրված կառուցվածքից բխեցնում ենք մաթեմատիկական հետևություններ։</p>
+<p>Dashboard-ի կառուցումը հետազոտության ներկայացման ձևն է։ Այն ինքնուրույն նոր էմպիրիկ տվյալների աղբյուր չէ։</p>
+</details>
+</section>
+
+<section class="panel" id="p2" role="tabpanel" aria-labelledby="t2" tabindex="-1" hidden>
+<p class="kicker">03 / ՄԵԹՈԴԻ ԸՆՏՐՈՒԹՅԱՆ ՀԻՄՆԱՎՈՐՈՒՄԸ</p>
+<h1>Ինչո՞ւ է խնդրին համապատասխանում SEM-ը</h1>
+<p class="lead">Մեթոդի համապատասխանությունը հիմնավորում ենք հետազոտական խնդրի պահանջներով՝ բազմաչափ հասկացություններ, փոխկապակցված ուղիներ և միջնորդական մեխանիզմ։</p>
+<div class="note"><b>Ընտրության համատեքստը․</b> առաջադրանքը նախապես նախատեսում է SEM-ի կիրառություն։ Մեր նպատակը դրա համապատասխանությունը բացատրելն է։ Իրական տվյալների վրա տարբեր մոդելների փորձնական համեմատություն չի կատարվել։</div>
+<div class="card">
+<h2>Հիմնավորման չորս հաջորդական քայլ</h2>
+<div class="step"><span class="n">1</span><div><h3>Հասկացությունները բազմաչափ են</h3><p>Կառավարման որակն ավելի լայն հասկացություն է, քան միայն թափանցիկությունը։ Արդյունավետությունն էլ չի սահմանափակվում միայն շահութաբերությամբ։ Ուստի պետք է հստակեցնել հասկացությունների և մի քանի ցուցանիշների կապը։</p></div></div>
+<div class="step"><span class="n">2</span><div><h3>Կապերը կազմում են համակարգ</h3><p>M-ը միաժամանակ X-ի նկատմամբ բացատրվող փոփոխական է և Y-ի նկատմամբ՝ բացատրող փոփոխական։ Մեզ պետք է փոխկապակցված հավասարումների կառուցվածք։</p></div></div>
+<div class="step"><span class="n">3</span><div><h3>Հարցի կենտրոնում միջնորդությունն է</h3><p>Ուզում ենք տարբերակել X → Y և X → M → Y ճանապարհները։ Միայն ընդհանուր կապի մեծությունը չի բացահայտի այս մեխանիզմը։</p></div></div>
+<div class="step"><span class="n">4</span><div><h3>SEM-ը միավորում է երկու շերտ</h3><p>Լատենտ փոփոխականներով ամբողջական SEM-ը համատեղ ներկայացնում է հասկացությունների չափումը և դրանց միջև կառուցվածքային կապերը։ Մեր առաջադրանքում չափման շերտը նկարագրում ենք, իսկ ազդեցությունները հաշվում պատրաստի գործակիցներով։</p></div></div>
+</div>
+
+<div class="card">
+<h2>Համեմատիր այլ մեթոդների հետ</h2>
+<p class="muted">Ընտրիր մեթոդը՝ տեսնելու դրա դերն ու մեր հարցի նկատմամբ տարբերությունը։</p>
+<div class="pills" id="methodButtons" aria-label="Մեթոդների համեմատություն">
+<button class="pill" data-method="sem" aria-pressed="true">SEM</button>
+<button class="pill" data-method="reg" aria-pressed="false">Ռեգրեսիա</button>
+<button class="pill" data-method="cfa" aria-pressed="false">CFA / գործոնային</button>
+<button class="pill" data-method="pca" aria-pressed="false">PCA</button>
+<button class="pill" data-method="corr" aria-pressed="false">Կոռելյացիա</button>
+<button class="pill" data-method="expert" aria-pressed="false">Փորձագիտական</button>
+<button class="pill" data-method="dea" aria-pressed="false">DEA</button>
+</div>
+<div id="methodContent" aria-live="polite"></div>
+</div>
+<div class="grid">
+<div class="card">
+<h3>Ընդհանուր գիտական մեթոդներ</h3>
+<p><b>Վերլուծություն․</b> ընդհանուր կապը բաժանում ենք բաղադրիչների։</p>
+<p><b>Սինթեզ․</b> դրանք միավորում ենք ընդհանուր մեկնաբանության մեջ։</p>
+<p><b>Մոդելավորում․</b> կապերը ներկայացնում ենք սլաքներով և հավասարումներով։</p>
+<p><b>Համեմատություն․</b> գնահատում ենք մեթոդների համապատասխանությունը և սցենարների տարբերությունները։</p>
+</div>
+<div class="card">
+<h3>Ինչ չենք շփոթում</h3>
+<p><b>SEM</b>՝ վերլուծական շրջանակ։</p>
+<p><b>Python</b>՝ հաշվարկի գործիք։</p>
+<p><b>Dashboard</b>՝ ներկայացման և փորձարկման միջավայր։</p>
+<p>Այս երեքը միասին չեն նշանակում, որ իրականացվել է խառը մեթոդներով էմպիրիկ հետազոտություն։</p>
+</div>
+</div>
+<details>
+<summary>Արդյո՞ք պարտադիր է SEM-ը կիրառել ցանկացած միջնորդության խնդրում</summary>
+<p>Ոչ։ Եթե X-ը, M-ը և Y-ը անմիջապես դիտարկվող մեծություններ են, պարզ գծային միջնորդությունը կարելի է ուսումնասիրել նաև ռեգրեսիոն հավասարումներով։</p>
+<p>Մեր դեպքում SEM-ի լրացուցիչ հիմնավորումը տրված հասկացությունների լատենտ և բազմացուցանիշ բնույթն է։ Ամբողջական գնահատման ժամանակ այդ շրջանակը թույլ կտար բացահայտ ներկայացնել նաև չափման սխալները՝ ընդունված չափման մոդելի ենթադրությունների ներքո։</p>
+<p>SEM-ի ընտրությունը ինքնին չի նշանակում, որ այն կհաղթի բոլոր այլընտրանքներին կամ կվերացնի տվյալների թերությունները։</p>
+</details>
+<details>
+<summary>Ինչո՞ւ առայժմ չենք ընտրում CB-SEM, PLS-SEM կամ կոնկրետ գնահատիչ</summary>
+<p>Այդ ընտրությունը պահանջում է հետազոտության նպատակի, չափման կառուցվածքի, ցուցանիշների սանդղակների, տվյալների բաշխման և ընտրանքի առանձնահատկությունների լրացուցիչ գնահատում։ Դրանք այստեղ տրամադրված չեն։</p>
+<p>Տրված գործակիցների արտադրյալն ու գումարը հաշվելու համար մոդելի գնահատման ալգորիթմ ընտրելու անհրաժեշտություն չկա։</p>
+</details>
+</section>
+
+<section class="panel" id="p3" role="tabpanel" aria-labelledby="t3" tabindex="-1" hidden>
+<p class="kicker">04 / ՉԱՓՄԱՆ ՄՈԴԵԼԸ</p>
+<h1>Ինչպե՞ս գաղափարը դարձնել չափելի</h1>
+<p class="lead">Չափման մոդելը պատասխանում է հարցին՝ ինչ ցուցանիշներով և ինչ տրամաբանությամբ ենք ներկայացնում լատենտ հասկացությունը։</p>
+<div class="pills" id="constructButtons" aria-label="Լատենտ փոփոխականի ընտրություն">
+<button class="pill" data-construct="X" aria-pressed="true">X · Կառավարման որակ</button>
+<button class="pill" data-construct="M" aria-pressed="false">M · Նորարարական կարողություն</button>
+<button class="pill" data-construct="Y" aria-pressed="false">Y · Արդյունավետություն</button>
+</div>
+<div class="card" id="constructContent" aria-live="polite"></div>
+<div class="note mint"><b>Աղբյուրի և մեր առաջարկի տարբերությունը․</b> ցուցանիշների անունները վերցված են առաջադրանքից։ Դրանց գրանցման ձևերը վերևում առաջարկվող գործառնական սահմանումներ են՝ ապագա տվյալահավաքի համար, ոչ թե արդեն կիրառված չափումներ։</div>
+
+<div class="card">
+<h2>Չափման հավասարման իմաստը</h2>
+<div class="formula">xᵢ = νᵢ + λᵢX + εᵢ</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Նշան</th><th>Իմաստ</th></tr></thead>
+<tbody>
+<tr><td>xᵢ</td><td>Կառավարման որակի i-րդ դիտարկվող ցուցանիշը։</td></tr>
+<tr><td>X</td><td>Լատենտ կառավարման որակը։</td></tr>
+<tr><td>λᵢ</td><td>Գործոնային բեռնվածությունը՝ ցուցանիշի և գործոնի կապի գործակիցը։</td></tr>
+<tr><td>νᵢ</td><td>Հաստատուն անդամը։</td></tr>
+<tr><td>εᵢ</td><td>Ցուցանիշի՝ X-ով չբացատրված բաղադրիչը։</td></tr>
+</tbody>
+</table>
+</div>
+<p style="margin-top:14px">Համանման հավասարումներ կսահմանվեին M-ի և Y-ի ցուցանիշների համար։ Տրված a = 0.60-ը կառուցվածքային ուղու գործակից է և որևէ ցուցանիշի λ բեռնվածությունը չէ։</p>
+</div>
+
+<details open>
+<summary>Ռեֆլեկտիվ, թե՞ ձևավորող չափում</summary>
+<p><b>Ռեֆլեկտիվ մեկնաբանության դեպքում</b> լատենտ գործոնը բացատրում է ցուցանիշների տատանումը․ սլաքները գնում են գործոնից դեպի ցուցանիշները։ Վերևի հավասարումն այս տրամաբանությամբ է գրված։</p>
+<p><b>Ձևավորող մեկնաբանության դեպքում</b> ցուցանիշներն են մասնակցում կառուցվածքի ձևավորմանը։ Օրինակ՝ R&amp;D ներդրումները կարող են դիտարկվել ոչ միայն որպես նորարարական կարողության արտահայտություն, այլ որպես դրա ձևավորման ռեսուրս։</p>
+<p>Առաջադրանքը չի լուծում այս տեսական ընտրությունը։ Այստեղ ռեֆլեկտիվ ձևը օգտագործում ենք չափման մոդելը բացատրելու համար՝ նշելով, որ իրական հետազոտությունում ընտրությունը պետք է հիմնավորել առանձին։</p>
+</details>
+<details>
+<summary>Ինչպե՞ս կստուգվեր չափման որակը</summary>
+<ul>
+<li><b>Բովանդակային համապատասխանություն․</b> արդյո՞ք ցուցանիշներն ընդգրկում են հասկացության էական կողմերը։ Այստեղ կարող է օգնել փորձագիտական քննարկումը։</li>
+<li><b>Չափման կառուցվածք․</b> արդյո՞ք տվյալները համահունչ են առաջարկված գործոնային կառուցվածքին։</li>
+<li><b>Հուսալիություն․</b> որքանո՞վ են չափումները հետևողական՝ ընտրված մոդելի և սանդղակների պայմաններում։</li>
+<li><b>Վավերություն․</b> արդյո՞ք չափվում է հենց նախատեսված հասկացությունը, և տարբերակվո՞ւմ է այն մյուսներից։</li>
+</ul>
+<p>Տարբեր բնույթի ցուցանիշների համար մեկ հուսալիության գործակիցը մեխանիկորեն կիրառելի չէ։ Օրինակ՝ տարբեր միավորներով ֆինանսական և հաշվարկային ցուցանիշները ինքնաբերաբար մեկ Լիկերտի սանդղակ չեն կազմում։</p>
+</details>
+<p class="small muted">Մեթոդաբանական աղբյուր՝ lavaan-ի CFA ուղեցույց։ Դասընթացային կապ՝ տեղեկատվության որակ, հուսալիություն, վավերություն և փորձագիտական հիմնավորում։</p>
+</section>
+
+<section class="panel" id="p4" role="tabpanel" aria-labelledby="t4" tabindex="-1" hidden>
+<p class="kicker">05 / ԿԱՌՈՒՑՎԱԾՔԱՅԻՆ ՄՈԴԵԼ ԵՎ ՀԱՇՎԱՐԿ</p>
+<h1>Երկու ճանապարհ՝ նույն արդյունքին</h1>
+<p class="lead">Կառուցվածքային մոդելը ներկայացնում է հասկացությունների միջև ուղիները։ Ընտրիր ճանապարհը՝ այն գծապատկերում առանձնացնելու համար։</p>
+
+<div class="card">
+<div class="pills" id="pathButtons">
+<button class="pill" data-path="all" aria-pressed="true">Ամբողջ մոդելը</button>
+<button class="pill" data-path="direct" aria-pressed="false">Ուղղակի ճանապարհը</button>
+<button class="pill" data-path="indirect" aria-pressed="false">Միջնորդավորված ճանապարհը</button>
+</div>
+<svg class="diagram" viewBox="0 0 760 280" role="img" aria-label="X-ից M գործակիցը 0.60 է, M-ից Y՝ 0.50, X-ից Y ուղղակի գործակիցը՝ 0.25">
+<defs>
+<marker id="ma" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path fill="#087f83" d="M0 0L8 4L0 8Z"/></marker>
+<marker id="mb" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path fill="#447be8" d="M0 0L8 4L0 8Z"/></marker>
+</defs>
+<g id="indirectPaths">
+<path id="pathA" class="edge" d="M205 98H282" marker-end="url(#ma)"/>
+<path id="pathB" class="edge" d="M478 98H555" marker-end="url(#ma)"/>
+<text class="edge-text" x="243" y="69" text-anchor="middle">a = 0.60</text>
+<text class="edge-text" x="517" y="69" text-anchor="middle">b = 0.50</text>
+<circle class="particle" r="4"><animateMotion dur="2.8s" repeatCount="indefinite" path="M205 98H282"/></circle>
+<circle class="particle" r="4"><animateMotion dur="2.8s" begin="1.4s" repeatCount="indefinite" path="M478 98H555"/></circle>
+</g>
+<g id="directPaths">
+<path class="edge direct-edge" d="M108 145C108 235 652 235 652 145" marker-end="url(#mb)"/>
+<text class="edge-text direct-text" x="380" y="254" text-anchor="middle">c′ = 0.25 · Ուղղակի բաղադրիչ</text>
+<circle class="blue-particle" r="4"><animateMotion dur="5s" repeatCount="indefinite" path="M108 145C108 235 652 235 652 145"/></circle>
+</g>
+<rect class="node" x="10" y="48" width="195" height="98" rx="24"/>
+<rect class="node" x="282" y="48" width="196" height="98" rx="24"/>
+<rect class="node" x="555" y="48" width="195" height="98" rx="24"/>
+<text class="letter" x="108" y="83" text-anchor="middle">X</text>
+<text class="node-name" x="108" y="116" text-anchor="middle">Կառավարման որակ</text>
+<text class="letter" x="380" y="81" text-anchor="middle">M</text>
+<text class="node-name" x="380" y="108" text-anchor="middle">Նորարարական</text>
+<text class="node-name" x="380" y="130" text-anchor="middle">կարողություն</text>
+<text class="letter" x="652" y="83" text-anchor="middle">Y</text>
+<text class="node-name" x="652" y="116" text-anchor="middle">Արդյունավետություն</text>
+</svg>
+<p id="pathCaption" class="small muted" aria-live="polite">Տրված մոդելում X-ից Y կա մեկ ուղղակի և մեկ միջնորդավորված ճանապարհ։ Սլաքների ուղղությունները մոդելի ենթադրություններ են։</p>
+</div>
+
+<div class="card">
+<h2>Մոդելի հավասարումները</h2>
+<div class="formula">M = αₘ + aX + ζₘ
+Y = αᵧ + c′X + bM + ζᵧ</div>
+<p><b>a</b>՝ X-ի կապը M-ի հետ։ <b>b</b>՝ M-ի կապը Y-ի հետ՝ X-ը հաշվի առնելիս։ <b>c′</b>՝ X-ի ուղղակի կապը Y-ի հետ՝ M-ը հաշվի առնելիս։</p>
+<p class="small muted">α անդամները հաստատուններն են։ ζ անդամները՝ համապատասխան փոփոխականների՝ ներառված կանխատեսիչներով չբացատրված բաղադրիչները։</p>
+</div>
+
+<div class="card">
+<h2>Հաշվարկը՝ բացատրությամբ</h2>
+<div class="pills" id="calcButtons">
+<button class="pill" data-step="0" aria-pressed="true">1 · Ուղղակի</button>
+<button class="pill" data-step="1" aria-pressed="false">2 · Անուղղակի</button>
+<button class="pill" data-step="2" aria-pressed="false">3 · Ընդհանուր</button>
+<button class="pill" data-step="3" aria-pressed="false">4 · Տեղադրում</button>
+</div>
+<div id="calcContent" aria-live="polite"></div>
+</div>
+
+<details>
+<summary>Ի՞նչ պայմաններում ենք կիրառում c = c′ + ab տրոհումը</summary>
+<p>Այստեղ ընդունում ենք մեկ միջնորդով գծային, ադիտիվ մոդել՝ առանց X × M փոխազդեցության։ Գործակիցները պետք է համապատասխանեն նույն համակարգին և համադրելի ստանդարտացմանը։</p>
+<p>Այս պայմաններում միջնորդավորված ճանապարհի գործակիցը ab-ն է, իսկ ընդհանուր գործակիցը՝ c′ + ab։ Ոչ գծային կամ փոխազդեցությամբ մոդելներում նույն բանաձևը չի կարելի ինքնաբերաբար փոխանցել։</p>
+</details>
+</section>
+
+<section class="panel" id="p5" role="tabpanel" aria-labelledby="t5" tabindex="-1" hidden>
+<p class="kicker">06 / ՀԱՇՎԱՐԿԱՅԻՆ ԻՐԱԿԱՆԱՑՈՒՄ</p>
+<h1>Մեթոդը՝ SEM, հաշվարկը՝ Python</h1>
+<p class="lead">Վերարտադրելիությունը նշանակում է ցույց տալ մուտքային տվյալները, գործողությունները և ստացված ելքը։</p>
+
+<div class="card">
+<div class="table-wrap">
+<table>
+<thead><tr><th>Գործիք կամ մակարդակ</th><th>Դերը</th><th>Ինչ է կատարվել</th></tr></thead>
+<tbody>
+<tr><td>SEM</td><td>Վերլուծական շրջանակ</td><td>Սահմանվել և բացատրվել է տրված կառուցվածքը։</td></tr>
+<tr><td>Python 3.12.14</td><td>Թվային հաշվարկ և ստուգում</td><td>Հաշվարկվել են բաղադրիչները և համեմատվել սցենարները։</td></tr>
+<tr><td>Decimal</td><td>Տասնորդական թվաբանություն</td><td>Կատարվել են ճշգրիտ տասնորդական բազմապատկում և գումարում։</td></tr>
+<tr><td>HTML և CSS</td><td>Ներկայացման կառուցվածք</td><td>Կառուցվել են այս բաժինները, աղյուսակներն ու տեսքը։</td></tr>
+<tr><td>JavaScript և SVG</td><td>Ինտերակտիվություն</td><td>Աշխատում են ընտրիչները, գծապատկերները, սահիչներն ու հարցերը։</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note">Այս էջը Python սերվեր չի գործարկում։ Python-ով ստուգված հաշվարկը ներկայացված է ստորև, իսկ սահիչների վերահաշվարկը կատարվում է բրաուզերում՝ նույն բանաձևերով։</div>
+</div>
+
+<div class="card">
+<h2>Վերարտադրելի Python կոդ</h2>
+<p class="small muted">Արտաքին փաթեթներ պետք չեն․ Decimal-ը ստանդարտ գրադարանի մաս է։</p>
+<pre id="pythonCode">from decimal import Decimal as D
+
+# Given standardized path coefficients
+a = D("0.60")
+b = D("0.50")
+c_prime = D("0.25")
+
+# Effect decomposition
+indirect = a * b
+total = c_prime + indirect
+
+print(f"Direct: {c_prime:.2f}")
+print(f"Indirect: {indirect:.2f}")
+print(f"Total: {total:.2f}")
+
+if total != 0 and c_prime * indirect >= 0:
+    print(f"Indirect share (%): {100 * indirect / total:.2f}")
+    print(f"Direct share (%): {100 * c_prime / total:.2f}")
+else:
+    print("Shares are not interpreted in this scenario.")</pre>
+<div class="actions"><button class="btn" id="copyPython">Պատճենել կոդը</button></div>
+<div class="status" id="copyStatus" role="status"></div>
+<h3>Ստուգված հաշվարկի ելքը</h3>
+<pre>Direct: 0.25
+Indirect: 0.30
+Total: 0.55
+Indirect share (%): 54.55
+Direct share (%): 45.45</pre>
+<p>Սկզբնական արդյունքները ստուգվել են Python-ով։ Լաբորատորիայի համար ստուգվել են նաև անջատված ուղու, հակադիր նշաններով և զրոյական ընդհանուր բաղադրիչով սցենարները։</p>
+</div>
+
+<div class="grid">
+<div class="card"><h3>Ինչ է հաստատում այս ստուգումը</h3><p>Տրված մուտքերով թվաբանական գործողությունների ճշտությունն ու բանաձևերի համահունչ իրականացումը։</p></div>
+<div class="card"><h3>Ինչի համար լրացուցիչ տվյալներ են պետք</h3><p>Գործակիցների գնահատում, ստանդարտ սխալներ, վստահության միջակայքներ, չափման որակ և մոդելի էմպիրիկ համապատասխանություն։</p></div>
+</div>
+<div class="note warm">Նույն պատասխանը երկու ծրագրավորման լեզվով ստանալը հաշվարկային ստուգում է։ Այն ինքնուրույն չի հաստատում մոդելի վավերությունը, իրական կազմակերպությունների վարքագիծը կամ պատճառականությունը։</div>
+
+<details>
+<summary>Ինչպիսի՞ն կլիներ ամբողջական էմպիրիկ ընթացակարգը</summary>
+<ol>
+<li>Սահմանել կազմակերպությունների համակցությունը, ժամանակահատվածը և դիտարկման միավորը։</li>
+<li>Հստակեցնել ինը ցուցանիշների չափման և գրանցման ձևերը։</li>
+<li>Հիմնավորել ընտրանքն ու հավաքագրել տվյալները՝ հնարավորության դեպքում մի քանի աղբյուրից։</li>
+<li>Ստուգել տվյալների որակը, բացակայող արժեքները և ազդեցիկ դիտարկումները։</li>
+<li>Գնահատել չափման մոդելն ու դրա համապատասխանությունը։</li>
+<li>Գնահատել կառուցվածքային մոդելը և ազդեցությունների անորոշությունը։</li>
+<li>Իրականացնել հիմնավորված կայունության ստուգումներ և ներկայացնել եզրակացությունները։</li>
+</ol>
+<p class="small muted">Սա հետագա հետազոտության ծրագիր է․ այս քայլերը չեն ներկայացվում որպես արդեն կատարված։</p>
+</details>
+</section>
+
+<section class="panel" id="p6" role="tabpanel" aria-labelledby="t6" tabindex="-1" hidden>
+<p class="kicker">07 / ՍԿԶԲՆԱԿԱՆ ԱՐԴՅՈՒՆՔՆԵՐԸ</p>
+<h1>Ի՞նչ ստացանք և ինչպե՞ս ընթերցենք</h1>
+<p class="lead">Այս բաժնի թվերը վերաբերում են միայն առաջադրանքի սկզբնական գործակիցներին։ Սցենարային փորձարկումները դրանք չեն փոփոխում։</p>
+<div class="stats">
+<div class="stat"><div class="label">ՈՒՂՂԱԿԻ · c′</div><div class="value">0.25</div><div class="label">X → Y</div></div>
+<div class="stat teal"><div class="label">ԱՆՈՒՂՂԱԿԻ · ab</div><div class="value">0.30</div><div class="label">X → M → Y</div></div>
+<div class="stat"><div class="label">ԸՆԴՀԱՆՈՒՐ · c</div><div class="value">0.55</div><div class="label">c′ + ab</div></div>
+</div>
+<div class="card">
+<h2>Ընդհանուր գործակցի կազմը</h2>
+<div class="ring-wrap">
+<svg class="ring" viewBox="0 0 120 120" role="img" aria-label="Ընդհանուր գործակցի 54.55 տոկոսը անուղղակի բաղադրիչն է, իսկ 45.45 տոկոսը՝ ուղղակի">
+<circle cx="60" cy="60" r="43" fill="none" stroke="#245bd8" stroke-width="12"/>
+<circle cx="60" cy="60" r="43" fill="none" stroke="#087f83" stroke-width="12" pathLength="100" stroke-dasharray="54.54545 45.45455" transform="rotate(-90 60 60)"/>
+<text x="60" y="59" text-anchor="middle" fill="currentColor" font-size="20" font-weight="800">0.55</text>
+<text x="60" y="76" text-anchor="middle" fill="currentColor" font-size="9">Ընդհանուր</text>
+</svg>
+<div>
+<p><span class="legend-dot" style="background:#087f83"></span><b>54.55%՝ անուղղակի բաղադրիչ</b></p>
+<p><span class="legend-dot" style="background:#245bd8"></span><b>45.45%՝ ուղղակի բաղադրիչ</b></p>
+<p class="small muted">0.30 / 0.55 և 0.25 / 0.55։ Սրանք ընդհանուր գործակցի թվաբանական բաժիններն են։</p>
+</div>
+</div>
+</div>
+
+<div class="card">
+<h2>Մեկնաբանություն՝ ստանդարտ շեղման միավորներով</h2>
+<p><b>Ուղղակի՝ 0.25․</b> նորարարական կարողությունը հաշվի առնելիս կառավարման որակի մեկ ստանդարտ շեղման տարբերությանը մոդելում համապատասխանում է արդյունավետության 0.25 ստանդարտ շեղման տարբերություն։</p>
+<p><b>Անուղղակի՝ 0.30․</b> կառավարման որակի նույն տարբերության՝ նորարարական կարողությամբ անցնող բաղադրիչը արդյունավետության 0.30 ստանդարտ շեղում է։</p>
+<p><b>Ընդհանուր՝ 0.55․</b> երկու բաղադրիչների գումարը արդյունավետության 0.55 ստանդարտ շեղում է՝ տրված մոդելի պայմաններում։</p>
+<div class="note warm"><b>0.55-ը «արդյունավետության 55% աճ» չէ։</b> Դա ստանդարտացված գործակից է։ Նույն կերպ 54.55%-ը բացատրված դիսպերսիա կամ R² չէ։</div>
+</div>
+<div class="grid">
+<div class="card"><h3>Ի՞նչ է հուշում բաղադրիչների համեմատությունը</h3><p>0.30-ը 0.25-ից մեծ է 0.05-ով։ Տրված կառուցվածքում նորարարական կարողությամբ անցնող բաղադրիչը թվային առումով ավելի մեծ է։</p></div>
+<div class="card"><h3>Ի՞նչ չի ասում այս տարբերությունը</h3><p>Չգիտենք՝ երկու բաղադրիչների տարբերությունը վիճակագրորեն նշանակալի՞ է։ Դրա համար պահանջվում է անորոշության առանձին գնահատում։</p></div>
+</div>
+<details open>
+<summary>Կարո՞ղ ենք հայտարարել «մասնակի միջնորդություն»</summary>
+<p>Կառուցվածքում կա և՛ ոչ զրոյական ուղղակի, և՛ ոչ զրոյական անուղղակի բաղադրիչ։ Սա համապատասխանում է մասնակի միջնորդության մոդելային պատկերին։</p>
+<p>Սակայն վիճակագրորեն հաստատված միջնորդության եզրակացության համար անհրաժեշտ են ազդեցությունների վստահության միջակայքներ կամ համապատասխան թեստեր։ Այստեղ այդպիսի եզրակացություն չենք տալիս։</p>
+</details>
+<div class="card">
+<h2>Գործնական հնարավոր իմաստ</h2>
+<p>Եթե ապագա իրական հետազոտությունը աջակցի այս կառուցվածքին, ուշադրության արժանի կլինի ոչ միայն կառավարման որակն ինքնին, այլ նաև այն մեխանիզմները, որոնցով այն կապված է նորարարական կարողության հետ։</p>
+<p>Այս հաշվարկով հնարավոր չէ որոշել R&amp;D ներդրման օպտիմալ գումարը կամ խոստանալ շահութաբերության որոշակի աճ։ Դրա համար պետք են հավելյալ տվյալներ և ավելի կոնկրետ մոդել։</p>
+</div>
+</section>
+
+<section class="panel" id="p7" role="tabpanel" aria-labelledby="t7" tabindex="-1" hidden>
+<p class="kicker">08 / ԻՆՏԵՐԱԿՏԻՎ ԼԱԲՈՐԱՏՈՐԻԱ</p>
+<h1>Իսկ եթե կապերը փոխվե՞ն</h1>
+<p class="lead">Փոփոխիր ենթադրվող գործակիցները և հետևիր ազդեցությունների տրոհմանը։ Սա ուսուցողական սցենար է՝ իրական տվյալներից նոր գնահատում չի կատարվում։</p>
+<div class="grid">
+<div class="card">
+<h2>Սցենարի պարամետրերը</h2>
+<div class="control"><label for="a"><span>a · X → M</span><output id="aOut" for="a">0.60</output></label><input id="a" type="range" min="-0.8" max="0.8" step="0.01" value="0.60"><div class="range-ends"><span>−0.80</span><span>0</span><span>+0.80</span></div></div>
+<div class="control"><label for="b"><span>b · M → Y</span><output id="bOut" for="b">0.50</output></label><input id="b" type="range" min="-0.7" max="0.7" step="0.01" value="0.50"><div class="range-ends"><span>−0.70</span><span>0</span><span>+0.70</span></div></div>
+<div class="control"><label for="cp"><span>c′ · X → Y</span><output id="cpOut" for="cp">0.25</output></label><input id="cp" type="range" min="-0.3" max="0.3" step="0.01" value="0.25"><div class="range-ends"><span>−0.30</span><span>0</span><span>+0.30</span></div></div>
+<div class="actions"><button class="btn primary" id="resetLab">Վերադարձնել սկզբնականը</button></div>
+<p class="small muted">Սահմանները ընտրված են ցուցադրման հարմարության համար։ Դրանք SEM գործակիցների ընդհանուր սահմանները չեն։</p>
+</div>
+
+<div class="card">
+<span class="badge" id="labBadge">Սկզբնական արժեքներ</span>
+<h2>Ընթացիկ արդյունք</h2>
+<div class="formula" id="liveFormula"></div>
+<p id="labMeaning"></p>
+<div class="note mint small" id="labShare"></div>
+<p id="labDifference" class="small muted"></p>
+</div>
+</div>
+
+<div class="card">
+<h2>Դրական և բացասական բաղադրիչներ</h2>
+<div class="chart-row"><span>Ուղղակի</span><div class="rail"><i id="barDirect"></i></div><b id="numDirect"></b></div>
+<div class="chart-row"><span>Անուղղակի</span><div class="rail"><i class="indirect" id="barIndirect"></i></div><b id="numIndirect"></b></div>
+<div class="chart-row"><span>Ընդհանուր</span><div class="rail"><i class="total" id="barTotal"></i></div><b id="numTotal"></b></div>
+<div class="chart-scale"><span>−1</span><span>0</span><span>+1</span></div>
+<p class="small muted" style="margin-top:20px">Զրոն կենտրոնում է։ Ձախ գոտիները բացասական, աջ գոտիները՝ դրական բաղադրիչներ են։ Սանդղակը բոլոր սցենարներում նույնն է։</p>
+<div class="status" id="labStatus" role="status" aria-live="polite" aria-atomic="true"></div>
+</div>
+
+<div class="card">
+<h2>Ընտրիր փորձ և բացատրիր արդյունքը</h2>
+<div class="pills" id="presets">
+<button class="pill" data-preset="0.6,0.5,0.25" aria-pressed="true">Սկզբնական</button>
+<button class="pill" data-preset="0.6,0,0.25" aria-pressed="false">b = 0</button>
+<button class="pill" data-preset="0.6,0.5,0" aria-pressed="false">c′ = 0</button>
+<button class="pill" data-preset="0.8,0.5,0.25" aria-pressed="false">Ավելի մեծ a</button>
+<button class="pill" data-preset="0.6,0.7,0.25" aria-pressed="false">Ավելի մեծ b</button>
+<button class="pill" data-preset="0.6,-0.5,0.25" aria-pressed="false">Հակադիր բաղադրիչներ</button>
+<button class="pill" data-preset="0.6,-0.5,0.3" aria-pressed="false">Փոխհատուցում՝ c = 0</button>
+</div>
+<p id="presetExplanation" class="muted"></p>
+</div>
+
+<div class="card">
+<h2>Ի՞նչ է նշանակում «մեկ ստանդարտ շեղում»</h2>
+<p>Պահելով ընթացիկ գործակիցները՝ փոխիր X-ի պայմանական տարբերությունը։ Ստորև ներկայացվում է մոդելային գծային բաղադրիչը՝ առանց անհատական մնացորդների։</p>
+<div class="control"><label for="dx"><span>ΔX · Ստանդարտ շեղման միավոր</span><output id="dxOut" for="dx">1.00</output></label><input id="dx" type="range" min="-2" max="2" step="0.1" value="1"><div class="range-ends"><span>−2</span><span>0</span><span>+2</span></div></div>
+<div class="formula" id="sdFormula"></div>
+<p class="small muted">Սա դիտարկվող կազմակերպության արդյունքի կանխատեսման միջակայք չէ և պատճառական միջամտության երաշխավորված արդյունք չէ։</p>
+</div>
+<details>
+<summary>Զգայունության մաթեմատիկական մեկնաբանություն</summary>
+<div class="formula">c = c′ + ab
+∂c/∂a = b
+∂c/∂b = a
+∂c/∂c′ = 1</div>
+<p>Սկզբնական կետում a-ն 0.10-ով մեծացնելիս ընդհանուր գործակիցը մեծանում է 0.05-ով, իսկ b-ն 0.10-ով մեծացնելիս՝ 0.06-ով՝ մյուս գործակիցները հաստատուն պահելիս։</p>
+<p>Սա բանաձևի սցենարային զգայունությունն է։ Իրական տվյալներով այլընտրանքային մոդելների կամ ընտրանքների կայունության ստուգում այստեղ չի կատարվում։</p>
+</details>
+</section>
+
+<section class="panel" id="p8" role="tabpanel" aria-labelledby="t8" tabindex="-1" hidden>
+<p class="kicker">09 / ՀԵՏԱԶՈՏՈՒԹՅԱՆ ՈՐԱԿԸ</p>
+<h1>Որտե՞ղ են մեր եզրակացության սահմանները</h1>
+<p class="lead">Մեթոդաբանության հիմնավորումը ներառում է նաև այն պայմանները, որոնց խախտման դեպքում մեկնաբանությունը կարող է սխալ լինել։</p>
+<div class="card">
+<h2>Մոդելի կարևոր ենթադրություններ</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Պայման</th><th>Ինչո՞ւ է կարևոր</th><th>Այստեղի կարգավիճակը</th></tr></thead>
+<tbody>
+<tr><td>Տեսականորեն հիմնավորված ուղիներ</td><td>Սլաքները պետք է ունենան բովանդակային հիմնավորում։</td><td>Տրված են առաջադրանքով, քննարկվում են տեսականորեն։</td></tr>
+<tr><td>Գծայնություն, ադիտիվություն, փոխազդեցության բացակայություն</td><td>Կիրառվող պարզ տրոհման հիմքն է։</td><td>Ընդունվում է հաշվարկային օրինակում։</td></tr>
+<tr><td>Չափման մոդելի հիմնավորվածություն</td><td>Ցուցանիշները պետք է համապատասխանեն լատենտ հասկացություններին։</td><td>Ներկայացվում է, բայց տվյալներով չի ստուգվում։</td></tr>
+<tr><td>Գործակիցների համադրելի ստանդարտացում</td><td>Անհրաժեշտ է նույն համակարգում ուղիները համադրելու համար։</td><td>Տրված գործակիցները մեկնաբանում ենք այս պայմանով։</td></tr>
+<tr><td>Պատճառական նույնականացում</td><td>Պետք է բացառել այլ հավանական բացատրությունները։</td><td>Այս տվյալներով ապահովված չէ։</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="grid">
+<div class="card">
+<h3>Կապը պատճառականություն չէ</h3>
+<p>Ռեսուրսներով հարուստ կազմակերպությունը կարող է ունենալ և՛ լավ կառավարում, և՛ բարձր արդյունավետություն։ Չներառված ռեսուրսային գործոնը կարող է բացատրել կապի մի մասը։</p>
+<p>Հնարավոր է նաև հակադարձ ուղղություն․ ավելի արդյունավետ կազմակերպությունն ավելի շատ միջոցներ ունենա նորարարության համար։</p>
+</div>
+<div class="card">
+<h3>Ինչ կպահանջվեր պատճառական ընթերցման համար</h3>
+<p>Ժամանակային հիմնավորում, համապատասխան հետազոտական դիզայն, շփոթեցնող գործոնների վերահսկում և միջնորդության նույնականացման ենթադրություններ։</p>
+<p>Լավ համապատասխանությունը կամ փոքր p-արժեքը միայնակ այդ պահանջները չեն փոխարինում։</p>
+</div>
+</div>
+
+<div class="card">
+<h2>Կատարված և բաց մնացած քայլերը</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Քայլ</th><th>Կարգավիճակ</th><th>Մեկնաբանություն</th></tr></thead>
+<tbody>
+<tr><td>Մեթոդի համապատասխանության հիմնավորում</td><td><span class="badge green">Ներկայացված է</span></td><td>Հիմնված է հարցի կառուցվածքի և լատենտ հասկացությունների վրա։</td></tr>
+<tr><td>Ազդեցությունների հաշվարկ</td><td><span class="badge green">Կատարված է</span></td><td>Ուղղակի՝ 0.25, անուղղակի՝ 0.30, ընդհանուր՝ 0.55։</td></tr>
+<tr><td>Հաշվարկի վերարտադրելիություն</td><td><span class="badge green">Ներկայացված է</span></td><td>Տրված են մուտքերը, բանաձևերը, Python կոդը և ելքը։</td></tr>
+<tr><td>Չափման հուսալիություն և վավերություն</td><td><span class="badge gold">Չի գնահատվել</span></td><td>Չկան ցուցանիշների իրական դիտարկումներ։</td></tr>
+<tr><td>p-արժեքներ և վստահության միջակայքներ</td><td><span class="badge gold">Չեն հաշվարկվել</span></td><td>Չկան անհրաժեշտ անորոշության տվյալներ։</td></tr>
+<tr><td>CFI, TLI, RMSEA, SRMR</td><td><span class="badge gold">Չեն հաշվարկվել</span></td><td>Մոդելն իրական տվյալների նկատմամբ չի գնահատվել։</td></tr>
+<tr><td>Էմպիրիկ կայունության ստուգումներ</td><td><span class="badge gold">Հետագա քայլ</span></td><td>Սահիչները չեն փոխարինում այլընտրանքային տվյալային վերլուծություններին։</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="card">
+<h2>Դասընթացի որակի չափանիշները՝ մեր աշխատանքում</h2>
+<p><b>Ամբողջականություն․</b> պատասխանում ենք առաջադրանքի բոլոր հարցերին՝ տվյալները, մեթոդը, հաշվարկն ու սահմանները կապելով միմյանց։</p>
+<p><b>Ճշգրտություն․</b> տալիս ենք կոնկրետ թվեր և ճիշտ միավորներով մեկնաբանություն։</p>
+<p><b>Հուսալիության հարց․</b> հաշվարկը կրկնելի է, սակայն էմպիրիկ արդյունքների կայունությունն ու չափման հուսալիությունը դեռ գնահատված չեն։</p>
+<p><b>Հաղորդակցելիություն․</b> յուրաքանչյուր թվի կողքին բացատրում ենք՝ ինչ է այն նշանակում և ինչ որոշումների համար դեռ բավարար չէ։</p>
+</div>
+
+<details>
+<summary>Ինչպե՞ս կգնահատեինք անուղղակի ազդեցության անորոշությունը</summary>
+<p>Իրական տվյալների առկայության դեպքում հնարավոր մոտեցում է bootstrap-ը․ կազմակերպությունների դիտարկումներից բազմիցս ձևավորել վերաընտրանքներ, յուրաքանչյուրում վերագնահատել ամբողջ մոդելն ու հաշվել ab-ը։</p>
+<p>Ստացված բաշխմամբ կարելի է կառուցել անուղղակի ազդեցության վստահության միջակայք։ Միայն 0.60 և 0.50 թվերից այդ միջակայքը ստանալ հնարավոր չէ։</p>
+</details>
+<details>
+<summary>Ինչո՞ւ «կատարյալ համապատասխանությունը» միշտ չէ, որ ուժեղ ապացույց է</summary>
+<p>Եթե երեք մեծությունները դիտարկվող համարեինք և գնահատեինք բոլոր երեք ուղիներով սովորական միջնորդության կովարիացիոն մոդել, այն կլիներ հագեցած՝ զրո ազատության աստիճանով։ Այդ դեպքում գլոբալ համապատասխանությունն ինքնուրույն տեսությունը տարբերակելու հնարավորություն չէր տա։</p>
+<p>Սա չի նշանակում, որ ինը ցուցանիշով լատենտ մոդելն էլ անպայման հագեցած է․ դրա նույնականացումն ու համապատասխանությունը առանձին հարցեր են։</p>
+</details>
+</section>
+
+<section class="panel" id="p9" role="tabpanel" aria-labelledby="t9" tabindex="-1" hidden>
+<p class="kicker">10 / ԵԶՐԱԿԱՑՈՒԹՅՈՒՆ ԵՎ ՊԱՇՏՊԱՆՈՒԹՅՈՒՆ</p>
+<h1>Մեթոդը բացատրել, արդյունքը՝ հիմնավորել</h1>
+<p class="lead">Ամփոփ եզրակացություն, բանավոր ներկայացման հուշաթերթ և գիտելիքի ինքնաստուգում։</p>
+
+<div class="card">
+<h2>Հետազոտության եզրակացությունը</h2>
+<p class="quote">SEM մոտեցումը բովանդակային առումով համապատասխանում է առաջադրանքին, քանի որ այն միավորում է բազմացուցանիշ լատենտ հասկացությունների չափումը և դրանց միջև ուղղակի ու միջնորդավորված կապերի ներկայացումը։ Տրված գծային մոդելում անուղղակի ազդեցությունը 0.30 է, իսկ ընդհանուր ազդեցությունը՝ 0.55։ Անուղղակի բաղադրիչը կազմում է ընդհանուր գործակցի մոտ 54.55%-ը։ Այս արդյունքները տրված կառուցվածքի հաշվարկային հետևություններն են․ դրանց վիճակագրական նշանակալիությունն ու պատճառական մեկնաբանությունը լրացուցիչ տվյալներ և հիմնավորում են պահանջում։</p>
+</div>
+
+<div class="card">
+<h2>Բանավոր ներկայացման հուշաթերթ</h2>
+<div class="pills" id="speechButtons">
+<button class="pill" data-speech="short" aria-pressed="true">Մոտ 1 րոպե</button>
+<button class="pill" data-speech="long" aria-pressed="false">Ընդլայնված հերթականություն</button>
+</div>
+<div id="speechContent"></div>
+</div>
+
+<div class="card quiz">
+<h2>Փորձիր պաշտպանությունից առաջ</h2>
+<p class="muted">Պատասխանիր հարցերին, հետո ստուգիր բացատրությունները։</p>
+<form id="quiz">
+<fieldset><legend>1․ Ո՞րն է մեր դեպքում SEM-ի հիմնական հիմնավորումը։</legend>
+<label><input type="radio" name="q1" value="a">Այն միշտ ամենաճշգրիտ մեթոդն է։</label>
+<label><input type="radio" name="q1" value="b">Ունենք լատենտ հասկացություններ, մի քանի ուղի և միջնորդություն։</label>
+<label><input type="radio" name="q1" value="c">Python-ով SEM-ը հեշտ է ներկայացնել։</label>
+<p class="feedback" id="f1" hidden></p></fieldset>
+<fieldset><legend>2․ Եթե b = 0, իսկ մյուս սկզբնական թվերը պահպանվեն, ընդհանուր ազդեցությունը որքա՞ն կլինի։</legend>
+<label><input type="radio" name="q2" value="a">0.25</label>
+<label><input type="radio" name="q2" value="b">0.55</label>
+<label><input type="radio" name="q2" value="c">0.60</label>
+<p class="feedback" id="f2" hidden></p></fieldset>
+<fieldset><legend>3․ Ի՞նչ է նշանակում ընդհանուր՝ 0.55 գործակիցը։</legend>
+<label><input type="radio" name="q3" value="a">Շահութաբերությունն աճում է 55%-ով։</label>
+<label><input type="radio" name="q3" value="b">Արդյունավետության դիսպերսիայի 55%-ը բացատրված է։</label>
+<label><input type="radio" name="q3" value="c">Մոդելում մեկ SD X տարբերությանը համապատասխանում է 0.55 SD Y ընդհանուր բաղադրիչ։</label>
+<p class="feedback" id="f3" hidden></p></fieldset>
+<fieldset><legend>4․ Python-ով և JavaScript-ով նույն պատասխանը ստանալը ի՞նչ է հաստատում։</legend>
+<label><input type="radio" name="q4" value="a">Մոդելի պատճառական ճշտությունը։</label>
+<label><input type="radio" name="q4" value="b">Հաշվարկների համապատասխանությունը՝ նույն մուտքերի և բանաձևերի դեպքում։</label>
+<label><input type="radio" name="q4" value="c">Բոլոր չափումների վավերությունը։</label>
+<p class="feedback" id="f4" hidden></p></fieldset>
+<div class="actions"><button class="btn primary" type="submit">Ստուգել պատասխանները</button><button class="btn" type="reset">Մաքրել</button></div>
+<div id="quizResult" class="status" role="status"></div>
+</form>
+</div>
+
+<details open>
+<summary>Առաջադրանքի ստուգող հարց 1․ չափման և կառուցվածքային մոդելների տարբերությունը</summary>
+<p><b>Չափման մոդելը</b> կապում է լատենտ հասկացությունները դիտարկվող ցուցանիշների հետ՝ ցույց տալով, թե ինչով ենք չափում։</p>
+<p><b>Կառուցվածքային մոդելը</b> կապում է հասկացությունները միմյանց հետ՝ ցույց տալով, թե որ ուղիներն ենք ուսումնասիրում։ Մեր դեպքում՝ X → M, M → Y և X → Y։</p>
+</details>
+<details open>
+<summary>Առաջադրանքի ստուգող հարց 2․ SEM-ը ինքնին ապացուցո՞ւմ է պատճառահետևանքային կապ</summary>
+<p>Ոչ։ Գործակիցները նկարագրում են սահմանված մոդելի կապերը։ Պատճառական եզրակացության համար անհրաժեշտ է հիմնավորել հետազոտական դիզայնը, ժամանակային ուղղությունը և այլ բացատրությունները բացառող ենթադրությունները։</p>
+</details>
+
+<div class="card">
+<h2>Կապը դասընթացի յոթ նյութերի հետ</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Նյութ</th><th>Ինչն է օգտագործվել մեր կառուցվածքում</th></tr></thead>
+<tbody>
+<tr><td>Թեմա 1</td><td>Համակարգային մոտեցում, օբյեկտ, առարկա, նպատակ և խնդիրներ։</td></tr>
+<tr><td>Թեմա 2</td><td>Մեթոդների դասակարգում, ընտրության հիմնավորում, համեմատություն և համադրման սահմաններ։</td></tr>
+<tr><td>Թեմա 3</td><td>Տեղեկատվության որակ, աղբյուրներ, չափման հուսալիություն և վավերություն։</td></tr>
+<tr><td>Թեմա 4</td><td>Փորձագիտական գնահատման հնարավոր օժանդակ դեր՝ ցուցանիշների բովանդակային հիմնավորման համար։</td></tr>
+<tr><td>Թեմա 5</td><td>Վարկածների ձևակերպում, հետազոտության պլան և արդյունքների հաղորդում։</td></tr>
+<tr><td>Թեմա 6</td><td>Ամբողջականություն, ճշգրտություն, հուսալիություն և սխալ մեկնաբանության ռիսկեր։</td></tr>
+<tr><td>Քանակական մեթոդների դասախոսություն</td><td>SEM-ի տեղը ռեգրեսիայի, գործոնային վերլուծության, PCA-ի և մյուս քանակական մեթոդների շարքում։</td></tr>
+</tbody>
+</table>
+</div>
+<p class="small muted" style="margin-top:12px">Դասընթացի նյութերը մեթոդաբանական հիմք են։ Աղյուսակը չի նշանակում, որ թվարկված բոլոր մեթոդները կիրառվել են որպես առանձին էմպիրիկ վերլուծություններ։</p>
+</div>
+
+<div class="card">
+<h2>Աղբյուրներ և հետագա ընթերցում</h2>
+<p class="small muted">Սկզբնական տվյալները վերցված են տրամադրված առաջադրանքի լուսանկարից։ Դասընթացային կառուցվածքը՝ յոթ տրամադրված ուսումնական նյութերից։ Ստորև մեթոդաբանական լրացուցիչ առաջնային աղբյուրներն են։</p>
+<ol class="source-list">
+<li><a href="https://www.lavaan.ugent.be/tutorial/cfa.html" target="_blank" rel="noopener">lavaan · A CFA example</a><br><span class="small muted">Լատենտ գործոններ, ցուցանիշներ և չափման մոդել։</span></li>
+<li><a href="https://www.lavaan.ugent.be/tutorial/sem.html" target="_blank" rel="noopener">lavaan · A SEM example</a><br><span class="small muted">Չափման և կառուցվածքային մասերի համակցում։</span></li>
+<li><a href="https://www.lavaan.ugent.be/tutorial/mediation.html" target="_blank" rel="noopener">lavaan · Mediation</a><br><span class="small muted">Ուղղակի, անուղղակի և ընդհանուր ազդեցություններ, անորոշության գնահատման օրինակ։</span></li>
+<li><a href="https://imai.fas.harvard.edu/research/mediation.html" target="_blank" rel="noopener">Imai, Keele &amp; Yamamoto (2010). Identification, Inference, and Sensitivity Analysis for Causal Mediation Effects.</a><br><span class="small muted">Statistical Science, 25(1), 51–71։ Պատճառական միջնորդության նույնականացման ենթադրություններ։</span></li>
+</ol>
+<p class="small muted">Աղբյուրներում ներկայացված օրինակների տվյալները չեն օգտագործվել որպես մեր առաջադրանքի դիտարկումներ։</p>
+</div>
+</section>
+
+<div class="pager">
+<button class="btn" id="previous" disabled>← Նախորդ բաժինը</button>
+<button class="btn primary" id="next">Հետազոտության կառուցվածքը →</button>
+</div>
+<footer>SEM Research Lab · Տրված մոդելի մեթոդաբանական և հաշվարկային ուսումնասիրություն · Սկզբնական լուծումը և փորձնական սցենարները պահպանվում են առանձին։</footer>
+</main>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const tabs=[...document.querySelectorAll('nav [role="tab"]')];
+const panels=[...document.querySelectorAll('[role="tabpanel"]')];
+const titles=["Առաջադրանքի տվյալները","Հետազոտության կառուցվածքը","Ինչո՞ւ հենց SEM","Չափման մոդելը","Ուղիներ և հաշվարկներ","Python և իրականացում","Արդյունքների մեկնաբանում","Ինտերակտիվ լաբորատորիա","Որակ և սահմանափակումներ","Պաշտպանություն և աղբյուրներ"];
+const visited=new Set([0]);
+let page=0;
+const reduce=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function showPage(n,focusPanel=true){
+page=Math.max(0,Math.min(9,n));visited.add(page);
+panels.forEach((p,i)=>p.hidden=i!==page);
+tabs.forEach((t,i)=>{
+t.setAttribute("aria-selected",String(i===page));
+t.tabIndex=i===page?0:-1;
+t.classList.toggle("visited",visited.has(i));
+});
+$("breadcrumb").textContent="Հետազոտություն / "+titles[page];
+$("progress").style.width=(visited.size*10)+"%";
+$("visitText").textContent="Բացված է "+visited.size+" / 10 բաժին";
+$("previous").disabled=page===0;
+$("next").hidden=page===9;
+$("next").textContent=page<9?titles[page+1]+" →":"";
+if(focusPanel){
+panels[page].focus({preventScroll:true});
+document.querySelector("main").scrollIntoView({behavior:reduce()?"auto":"smooth",block:"start"});
+}
+}
+tabs.forEach((t,i)=>{
+t.addEventListener("click",()=>showPage(i));
+t.addEventListener("keydown",e=>{
+let next=i;
+if(["ArrowRight","ArrowDown"].includes(e.key))next=(i+1)%10;
+else if(["ArrowLeft","ArrowUp"].includes(e.key))next=(i+9)%10;
+else if(e.key==="Home")next=0;
+else if(e.key==="End")next=9;
+else return;
+e.preventDefault();showPage(next,false);tabs[next].focus();
+});
+});
+$("previous").addEventListener("click",()=>showPage(page-1));
+$("next").addEventListener("click",()=>showPage(page+1));
+
+let dark=false,focus=false,motion=!reduce();
+function setMotion(){
+document.body.classList.toggle("animation-off",!motion);
+$("motion").textContent="Շարժում՝ "+(motion?"միացված":"անջատված");
+$("motion").setAttribute("aria-pressed",String(motion));
+document.querySelectorAll("svg").forEach(svg=>{
+try{if(motion&&svg.unpauseAnimations)svg.unpauseAnimations();else if(svg.pauseAnimations)svg.pauseAnimations();}catch{}
+});
+}
+$("motion").addEventListener("click",()=>{motion=!motion;setMotion();});
+$("theme").addEventListener("click",()=>{
+dark=!dark;document.documentElement.dataset.theme=dark?"dark":"light";
+$("theme").textContent=dark?"Լուսավոր տեսք":"Մութ տեսք";
+$("theme").setAttribute("aria-pressed",String(dark));
+});
+$("focus").addEventListener("click",()=>{
+focus=!focus;document.body.classList.toggle("focus-mode",focus);
+$("focus").textContent=focus?"Ելք ներկայացումից":"Ներկայացման ռեժիմ";
+$("focus").setAttribute("aria-pressed",String(focus));
+});
+
+function selectButtons(container,key,value){
+document.querySelectorAll("#"+container+" button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset[key]===value)));
+}
+
+const methods={
+sem:{name:"SEM · Կառուցվածքային հավասարումների մոդելավորում",question:"Ինչպե՞ս են միավորվում հասկացությունների չափումը և նրանց միջև ենթադրվող ուղիները։",use:"Համակարգում ներառվում են և՛ լատենտ կառուցվածքները, և՛ դրանց միջև մի քանի կապեր։ Կարելի է առանձնացնել ուղղակի ու միջնորդավորված բաղադրիչները։",fit:"Մեր խնդրին համապատասխանում է բազմացուցանիշ լատենտ հասկացությունների և X → M → Y մեխանիզմի պատճառով։ Իրական գնահատման համար անհրաժեշտ են համապատասխան տվյալներ։"},
+reg:{name:"Ռեգրեսիոն վերլուծություն",question:"Ինչպե՞ս է կախյալ փոփոխականը կապված մեկ կամ մի քանի կանխատեսիչների հետ։",use:"Կարող է ուսումնասիրել պարզ միջնորդություն՝ M-ի և Y-ի համար առանձին ռեգրեսիոն հավասարումներով։",fit:"Այստեղ SEM-ի հավելյալ համապատասխանությունը լատենտ հասկացությունների չափման մոդելն ու կառուցվածքային ուղիները միասին ներկայացնելն է։ Ռեգրեսիան սխալ տարբերակ չէ ցանկացած միջնորդության համար։"},
+cfa:{name:"Գործոնային վերլուծություն / CFA",question:"Ինչպե՞ս են դիտարկվող ցուցանիշները կապված ենթադրվող լատենտ գործոնների հետ։",use:"CFA-ն օգտակար է նախապես առաջարկված չափման կառուցվածքը ստուգելու համար։",fit:"Այն վերաբերում է մեր չափման շերտին։ Սակայն միայն CFA-ով դեռ չենք ներկայացնի կառավարման, նորարարության և արդյունավետության կառուցվածքային ռեգրեսիոն ուղիները։"},
+pca:{name:"PCA · Հիմնական բաղադրիչների մեթոդ",question:"Ինչպե՞ս սկզբնական ցուցանիշներն ամփոփել ավելի քիչ գծային բաղադրիչներով։",use:"Օգտակար է չափայնության նվազեցման և տվյալների ընդհանուր տատանման ամփոփման համար։",fit:"Մեր հիմնական նպատակը ցուցանիշների թվի նվազեցումը չէ։ Ունենք նախապես սահմանված հասկացություններ և նրանց միջև կոնկրետ միջնորդական մոդել։"},
+corr:{name:"Կոռելյացիոն վերլուծություն",question:"Որքանո՞վ և ինչ ուղղությամբ են երկու մեծություններ համատեղ տատանվում։",use:"Տալիս է զույգային կապի նկարագրություն և կարող է լինել նախնական վերլուծության մաս։",fit:"Միայն կոռելյացիան չի առանձնացնում մեր սահմանած ուղղակի և միջնորդավորված ճանապարհները և չի ապացուցում դրանց պատճառական ուղղությունը։"},
+expert:{name:"Փորձագիտական գնահատում",question:"Ինչպե՞ս հավաքագրել ու համակարգել մասնագիտական դատողություններ անորոշ խնդրի վերաբերյալ։",use:"Կարող է օգնել ընտրել հասկացություններին բովանդակային առումով համապատասխան ցուցանիշներ կամ քննարկել մոդելի տրամաբանությունը։",fit:"Սա հնարավոր օժանդակ փուլ է։ Փորձագետների համաձայնությունը չի փոխարինում կազմակերպությունների տվյալներով կառուցվածքային կապերի գնահատմանը։ Այս աշխատանքում փորձագիտական հարցում չի իրականացվել։"},
+dea:{name:"DEA · Տվյալների պարփակման վերլուծություն",question:"Որքանո՞վ են համադրելի միավորները հարաբերականորեն արդյունավետ՝ մուտքերն ու ելքերը համեմատելիս։",use:"Կառուցում է համեմատական արդյունավետության սահմանագիծ՝ մի քանի մուտքի և ելքի հիման վրա։",fit:"Մեր հարցը կազմակերպությունների վարկանիշ կամ մուտք–ելք սահմանագիծ ստանալը չէ։ Այստեղ արդյունավետությունը բացատրվող հասկացություն է, որի կապերի կառուցվածքն ենք ուսումնասիրում։"}
+};
+function renderMethod(key){
+const m=methods[key];
+$("methodContent").innerHTML="<h3>"+m.name+"</h3><p><b>Հիմնական հարցը․</b> "+m.question+"</p><p><b>Հնարավորությունը․</b> "+m.use+"</p><div class='note mint'><b>Մեր խնդրի համատեքստում․</b> "+m.fit+"</div>";
+selectButtons("methodButtons","method",key);
+}
+document.querySelectorAll("[data-method]").forEach(b=>b.addEventListener("click",()=>renderMethod(b.dataset.method)));
+
+const constructs={
+X:{name:"X · Կառավարման որակ",definition:"Կառավարման գործընթացների որակը նկարագրող լատենտ հասկացություն։ Առաջադրանքում այն ներկայացված է երեք ցուցանիշով։",rows:[
+["Թափանցիկություն","Սահմանված տեղեկատվության հրապարակման և հասանելիության չափանիշներով գնահատական։","Չափորոշիչների ցուցակ, փաստաթղթերի դիտարկում կամ հստակ ձևակերպված սանդղակ։"],
+["Հաշվետվողականություն","Հաշվետվությունների ներկայացման, պատասխանատվության և հետադարձ վերահսկման կանոնների գնահատում։","Հաշվետվություններ և նախապես սահմանված գնահատման չափանիշներ։"],
+["Վերահսկողություն","Ներքին վերահսկման ընթացակարգերի առկայության և գործարկման գնահատում։","Ընթացակարգերի ուսումնասիրություն, աուդիտի կամ գործընթացային տվյալներ։"]
+]},
+M:{name:"M · Նորարարական կարողություն",definition:"Նոր արտադրանքներ ու գործընթացներ զարգացնելու և ներդնելու կարողությունը նկարագրող հասկացություն։",rows:[
+["Նոր պրոդուկտների թիվ","Սահմանված ժամանակահատվածում ներդրված նոր պրոդուկտների հաշվարկ։","Պետք է հստակեցնել՝ ինչն է համարվում «նոր», և նույն ժամանակահատվածն օգտագործել բոլոր կազմակերպությունների համար։"],
+["R&D ներդրումներ","Հետազոտության և մշակման ծախսերի գրանցում։","Ընտրել բացարձակ գումար կամ, օրինակ, շրջանառության նկատմամբ բաժին՝ հիմնավորելով համադրելիությունը։"],
+["Գործընթացների թվայնացում","Նախապես սահմանված հիմնական գործընթացների թվայնացման աստիճան։","Հստակեցնել գործընթացների ցանկը, ամբողջական կամ մասնակի թվայնացման չափանիշները։"]
+]},
+Y:{name:"Y · Կազմակերպության արդյունավետություն",definition:"Գործունեության արդյունքներն ամփոփող բազմաչափ հասկացություն՝ առաջադրանքում ներկայացված երեք ցուցանիշներով։",rows:[
+["Շահութաբերություն","Հստակ ընտրված շահութաբերության ցուցանիշ։","Օրինակ՝ ակտիվների շահութաբերություն կամ վաճառքի մարժա․ ընտրությունը պետք է լինի միատեսակ և հիմնավորված։"],
+["Շուկայի մասնաբաժին","Կազմակերպության վաճառքի բաժինը սահմանված շուկայում։","Սահմանել ապրանքային և տարածքային շուկան, ժամանակահատվածն ու տվյալների աղբյուրը։"],
+["Հաճախորդների պահպանում","Սահմանված ժամանակահատվածում պահպանված հաճախորդների ցուցանիշ։","Հստակեցնել՝ ով է ակտիվ հաճախորդը և ինչ կանոնով է հաշվվում պահպանումը։"]
+]}
+};
+function renderConstruct(key){
+const c=constructs[key];
+$("constructContent").innerHTML="<span class='badge'>Տրված հասկացություն և ցուցանիշներ</span><h2>"+c.name+"</h2><p>"+c.definition+"</p><div class='table-wrap'><table><thead><tr><th>Առաջադրանքի ցուցանիշը</th><th>Առաջարկվող գործառնական սահմանում</th><th>Ինչը պետք է հստակեցնել</th></tr></thead><tbody>"+c.rows.map(r=>"<tr>"+r.map(v=>"<td>"+v+"</td>").join("")+"</tr>").join("")+"</tbody></table></div>";
+selectButtons("constructButtons","construct",key);
+}
+document.querySelectorAll("[data-construct]").forEach(b=>b.addEventListener("click",()=>renderConstruct(b.dataset.construct)));
+
+const pathCaptions={
+all:"Տրված մոդելում X-ից Y կա մեկ ուղղակի և մեկ միջնորդավորված ճանապարհ։ Սլաքների ուղղությունները մոդելի ենթադրություններ են։",
+direct:"Ուղղակի ճանապարհ՝ X → Y։ c′ = 0.25-ը նկարագրում է կապը՝ նորարարական կարողությունը հաշվի առնելիս։",
+indirect:"Միջնորդավորված ճանապարհ՝ X → M → Y։ Հաջորդական ուղիների գործակիցները բազմապատկվում են՝ 0.60 × 0.50 = 0.30։"
+};
+document.querySelectorAll("[data-path]").forEach(b=>b.addEventListener("click",()=>{
+const key=b.dataset.path;
+$("directPaths").classList.toggle("dim",key==="indirect");
+$("indirectPaths").classList.toggle("dim",key==="direct");
+$("pathCaption").textContent=pathCaptions[key];selectButtons("pathButtons","path",key);
+}));
+
+const calcSteps=[
+["Ուղղակի ազդեցությունը տրված է","c′ = 0.25","Այստեղ նոր հաշվարկ չկա։ Առանձնացնում ենք այն ուղին, որը X-ից հասնում է Y-ին՝ չանցնելով M-ով։"],
+["Ինչո՞ւ ենք բազմապատկում","ab = 0.60 × 0.50 = 0.30","X-ի մեկ ստանդարտ շեղման տարբերությանը M-ում համապատասխանում է 0.60 ստանդարտ շեղում։ Այդ բաղադրիչը Y-ին փոխանցվում է b = 0.50 գործակցով։ Հաջորդական ճանապարհի գործակիցը դրանց արտադրյալն է։"],
+["Ինչո՞ւ ենք գումարում","c = c′ + ab\nc = 0.25 + 0.30 = 0.55","Երկու բաղադրիչներն էլ վերաբերում են նույն X-ից նույն Y-ին տանող կապին և արտահայտված են համադրելի միավորներով։ Գծային ադիտիվ մոդելում դրանց գումարը տալիս է ընդհանուր բաղադրիչը։"],
+["Տեղադրում՝ հավասարումների միջոցով","M = 0.60X + ζₘ\nY = 0.25X + 0.50M + ζᵧ\nY = 0.25X + 0.50(0.60X + ζₘ) + ζᵧ\nY = 0.55X + 0.50ζₘ + ζᵧ","Կենտրոնացված ստանդարտացված փոփոխականների համար հաստատուն անդամները զրո են։ M-ի հավասարումը տեղադրելով Y-ի հավասարման մեջ՝ X-ի առաջ ստանում ենք 0.55։"]
+];
+function renderCalc(n){
+const [title,formula,explanation]=calcSteps[n];
+$("calcContent").replaceChildren();
+const h=document.createElement("h3");h.textContent=title;
+const f=document.createElement("div");f.className="formula";f.textContent=formula;
+const p=document.createElement("p");p.textContent=explanation;
+$("calcContent").append(h,f,p);selectButtons("calcButtons","step",String(n));
+}
+document.querySelectorAll("[data-step]").forEach(b=>b.addEventListener("click",()=>renderCalc(Number(b.dataset.step))));
+
+$("copyPython").addEventListener("click",async()=>{
+try{
+if(!navigator.clipboard)throw Error("Clipboard unavailable");
+await navigator.clipboard.writeText($("pythonCode").textContent);
+$("copyStatus").textContent="Կոդը պատճենված է։";
+}catch{
+const range=document.createRange();range.selectNodeContents($("pythonCode"));
+const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);
+$("copyStatus").textContent="Կոդը ընտրված է․ պատճենիր Ctrl+C կամ ⌘C ստեղներով։";
+}
+});
+
+const fmt=n=>(Math.abs(n)<1e-9?0:n).toFixed(2);
+const calc=(a,b,c,dx=1)=>{
+const indirect=a*b,total=c+indirect;
+const share=Math.abs(total)>1e-9&&c*indirect>=0?indirect/total:null;
+return{indirect,total,direct:c,share,dm:a*dx,dy:total*dx};
+};
+let liveTimer;
+function updateLab(){
+const a=Number($("a").value),b=Number($("b").value),cp=Number($("cp").value),dx=Number($("dx").value);
+const r=calc(a,b,cp,dx);
+$("aOut").textContent=fmt(a);$("bOut").textContent=fmt(b);$("cpOut").textContent=fmt(cp);$("dxOut").textContent=fmt(dx);
+const baseline=Math.abs(a-.6)<1e-9&&Math.abs(b-.5)<1e-9&&Math.abs(cp-.25)<1e-9;
+$("labBadge").textContent=baseline?"Սկզբնական արժեքներ":"Փորձնական սցենար";
+$("liveFormula").textContent="ab = "+fmt(a)+" × "+fmt(b)+" = "+fmt(r.indirect)+"\nc = "+fmt(cp)+" + ("+fmt(r.indirect)+") = "+fmt(r.total);
+let meaning;
+if(Math.abs(r.total)<1e-9&&Math.abs(cp)+Math.abs(r.indirect)>1e-9)meaning="Ուղղակի և անուղղակի բաղադրիչները փոխհատուցում են միմյանց։ Ընդհանուր զրոն չի նշանակում, որ յուրաքանչյուր ճանապարհն առանձին զրո է։";
+else if(Math.abs(r.total)<1e-9)meaning="Ընդհանուր բաղադրիչը զրո է․ այս պարամետրերով X-ից Y մոդելային ընդհանուր գծային բաղադրիչ չկա։";
+else if(cp*r.indirect<0)meaning="Բաղադրիչները հակադիր նշաններ ունեն։ Ընդհանուր արդյունքը դրանց հանրահաշվական գումարն է․ դրանք մասամբ մարում են միմյանց։";
+else if(Math.abs(r.indirect)<1e-9)meaning="Անուղղակի բաղադրիչը զրո է։ Եթե a-ն կամ b-ն զրո է, միջնորդավորված ճանապարհի արտադրյալը նույնպես զրո է։";
+else if(Math.abs(cp)<1e-9)meaning="Ուղղակի բաղադրիչը զրո է․ ընդհանուր գործակիցը հավասար է անուղղակի բաղադրիչին։ Սա պայմանական կառուցվածք է, ոչ վիճակագրական ապացույց։";
+else meaning="Երկու բաղադրիչները նույն ուղղությամբ են։ Դրանց գումարումը մեծացնում է ընդհանուր գործակցի բացարձակ մեծությունը։";
+$("labMeaning").textContent=meaning;
+if(r.share===null){
+$("labShare").className="note warm small";
+$("labShare").textContent=Math.abs(r.total)<1e-9?"Բաժինները չեն հաշվարկվում․ ընդհանուր գործակիցը զրո է։":"Տոկոսային բաժինները չենք մեկնաբանում․ հակադիր նշանների դեպքում դրանք կարող են մոլորեցնել։";
+}else{
+$("labShare").className="note mint small";
+$("labShare").textContent="Ընդհանուր գործակցի թվաբանական բաժինները՝ անուղղակի "+(100*r.share).toFixed(2)+"%, ուղղակի "+(100*(1-r.share)).toFixed(2)+"%։ Սրանք բացատրված դիսպերսիայի բաժիններ չեն։";
+}
+const delta=r.total-.55;
+$("labDifference").textContent="Սկզբնական ընդհանուր 0.55-ի համեմատ տարբերությունը՝ "+(delta>1e-9?"+":"")+fmt(delta)+"։";
+for(const [bar,num,value] of [["barDirect","numDirect",cp],["barIndirect","numIndirect",r.indirect],["barTotal","numTotal",r.total]]){
+$(bar).style.left=(value>=0?50:50+value*50)+"%";
+$(bar).style.width=Math.abs(value)*50+"%";
+$(num).textContent=fmt(value);
+}
+$("sdFormula").textContent="ΔM = a × ΔX = "+fmt(r.dm)+" SD\nՈւղղակի ΔY = c′ × ΔX = "+fmt(cp*dx)+" SD\nԱնուղղակի ΔY = ab × ΔX = "+fmt(r.indirect*dx)+" SD\nԸնդհանուր ΔY = c × ΔX = "+fmt(r.dy)+" SD";
+document.querySelectorAll("[data-preset]").forEach(button=>{
+const v=button.dataset.preset.split(",").map(Number);
+button.setAttribute("aria-pressed",String(Math.abs(a-v[0])<1e-9&&Math.abs(b-v[1])<1e-9&&Math.abs(cp-v[2])<1e-9));
+});
+$("presetExplanation").textContent=baseline?"Սկզբնական լուծումը՝ ուղղակի 0.25, անուղղակի 0.30, ընդհանուր 0.55։":meaning;
+clearTimeout(liveTimer);
+liveTimer=setTimeout(()=>{$("labStatus").textContent="Ընթացիկ սցենար․ ուղղակի "+fmt(cp)+", անուղղակի "+fmt(r.indirect)+", ընդհանուր "+fmt(r.total)+"։";},300);
+}
+["a","b","cp","dx"].forEach(id=>$(id).addEventListener("input",updateLab));
+function preset(values){["a","b","cp"].forEach((id,i)=>$(id).value=values[i]);updateLab();}
+$("resetLab").addEventListener("click",()=>{$("dx").value=1;preset([.6,.5,.25]);});
+document.querySelectorAll("[data-preset]").forEach(b=>b.addEventListener("click",()=>preset(b.dataset.preset.split(",").map(Number))));
+
+const speeches={
+short:"Մեր հետազոտության հարցը կառավարման որակի և արդյունավետության կապի կառուցվածքն է։ SEM-ը համապատասխանում է խնդրին, քանի որ ունենք երեք լատենտ հասկացություն, յուրաքանչյուրի մի քանի ցուցանիշ և միջնորդական ճանապարհ։ Տարբերակում ենք չափման մոդելը՝ ինչով ենք չափում, և կառուցվածքային մոդելը՝ ինչպես են կապված հասկացությունները։ Տրված գործակիցներով անուղղակի բաղադրիչը 0.60 × 0.50 = 0.30 է, իսկ ընդհանուր գործակիցը՝ 0.25 + 0.30 = 0.55։ Հաշվարկը ստուգվել է Python-ով։ Սա ստանդարտացված մոդելային կապ է․ 0.55-ը տոկոսային աճ չէ, և միայն այս թվերով պատճառականություն կամ վիճակագրական նշանակալիություն չենք հաստատում։",
+long:"<ol><li><b>Սկսիր խնդրից․</b> մեզ հետաքրքրում է՝ կապի ինչ մասն է ուղղակի և ինչ մասն է անցնում նորարարական կարողությամբ։</li><li><b>Ցույց տուր տվյալները․</b> ունենք երեք պատրաստի գործակից և ինը ցուցանիշի անուն, սակայն չունենք կազմակերպությունների դիտարկումներ։</li><li><b>Հիմնավորիր մեթոդը․</b> լատենտ հասկացությունները և միջնորդական կառուցվածքը համահունչ են SEM շրջանակին։ Համեմատիր այն ռեգրեսիայի ու CFA-ի հետ։</li><li><b>Բացատրիր երկու շերտերը․</b> չափման մոդելը՝ ցուցանիշների համար, կառուցվածքային մոդելը՝ X, M և Y-ի կապերի համար։</li><li><b>Հաշվիր ճանապարհները․</b> բազմապատկիր հաջորդական գործակիցները, հետո գումարիր ուղղակի բաղադրիչը։</li><li><b>Ցուցադրիր գործիքը․</b> ներկայացրու Python կոդը, ապա լաբորատորիայում անջատիր b ուղին։</li><li><b>Ավարտիր սահմաններով․</b> բացատրի՛ր ստանդարտացված միավորները, նշանակալիության տվյալների բացակայությունը և պատճառականության հարցը։</li></ol>"
+};
+function renderSpeech(key){
+$("speechContent").innerHTML=key==="short"?"<p class='quote'>"+speeches.short+"</p>":speeches.long;
+selectButtons("speechButtons","speech",key);
+}
+document.querySelectorAll("[data-speech]").forEach(b=>b.addEventListener("click",()=>renderSpeech(b.dataset.speech)));
+
+const answers=["b","a","c","b"];
+const explanations=[
+"SEM-ի հիմնավորումն այստեղ խնդրի կառուցվածքն է՝ լատենտ հասկացություններ, մի քանի ցուցանիշ և միջնորդական ճանապարհ։",
+"b = 0-ի դեպքում ab = 0, հետևաբար ընդհանուր գործակիցը մնում է c′ = 0.25։",
+"Գործակիցը մեկնաբանվում է ստանդարտ շեղման միավորներով։ Այն ոչ շահութաբերության տոկոսային աճ է, ոչ էլ R²։",
+"Ծրագրային համապատասխանությունը ստուգում է հաշվարկը։ Մոդելի վավերությունն ու պատճառականությունը լրացուցիչ հիմնավորում են պահանջում։"
+];
+$("quiz").addEventListener("submit",e=>{
+e.preventDefault();let correct=0,completed=0;
+answers.forEach((answer,i)=>{
+const selected=$("quiz").querySelector('input[name="q'+(i+1)+'"]:checked');
+const feedback=$("f"+(i+1));feedback.hidden=false;
+if(!selected){feedback.className="feedback error";feedback.textContent="Ընտրիր պատասխան՝ այս հարցը ստուգելու համար։";return;}
+completed++;const ok=selected.value===answer;if(ok)correct++;
+feedback.className="feedback"+(ok?"":" error");
+feedback.textContent=(ok?"Ճիշտ է։ ":"Վերանայիր պատասխանը։ ")+explanations[i];
+});
+$("quizResult").textContent="Ճիշտ պատասխաններ՝ "+correct+" / 4։ Պատասխանված է՝ "+completed+" / 4։"+(correct===4?" Հիմնական տարբերակումները ճիշտ ես հասկացել։":"");
+});
+$("quiz").addEventListener("reset",()=>{
+answers.forEach((_,i)=>$("f"+(i+1)).hidden=true);$("quizResult").textContent="";
+});
+
+renderMethod("sem");renderConstruct("X");renderCalc(0);renderSpeech("short");updateLab();setMotion();showPage(0,false);
+})();
+</script>
+</body>
+</html>
